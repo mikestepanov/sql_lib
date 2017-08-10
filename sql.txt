@@ -1,0 +1,287 @@
+/*Project List*/
+CREATE PROCEDURE projectList()
+BEGIN
+ SELECT project_name, team_lead, income
+ FROM Projects
+ ORDER BY internal_id;
+END
+
+/*Countries Selection*/
+CREATE PROCEDURE countriesSelection()
+BEGIN
+  SELECT *
+  FROM countries
+  WHERE continent = "Africa"
+  ORDER BY name;
+END
+
+/*Monthly Scholarships*/
+CREATE PROCEDURE monthlyScholarships()
+BEGIN
+  SELECT id, (scholarship / 12) as scholarship
+  FROM scholarships;
+END
+
+/*Project Teams*/
+CREATE PROCEDURE projectsTeam()
+BEGIN
+	SELECT DISTINCT name
+  FROM projectLog
+  ORDER BY name;
+END
+
+/*Automatic Notifications*/
+CREATE PROCEDURE automaticNotifications()
+  SELECT email
+  FROM users
+  WHERE role NOT IN ("admin", "premium")
+  ORDER BY email;
+
+/*Volleyball Results*/
+CREATE PROCEDURE volleyballResults()
+BEGIN
+	SELECT *
+  FROM results
+  ORDER BY wins;
+END
+
+/*most expansive products*/
+CREATE PROCEDURE mostExpensive()
+BEGIN
+  SELECT name
+  FROM Products
+  ORDER BY (price * quantity) DESC, name ASC
+  LIMIT 1;
+END
+
+/*Contest Leaderboard*/
+CREATE PROCEDURE contestLeaderboard()
+BEGIN
+  SELECT name
+  FROM leaderboard
+  ORDER BY score DESC
+  LIMIT 3, 5;
+END
+
+/*Grade Distribution*/
+CREATE PROCEDURE gradeDistribution()
+BEGIN
+  SELECT Name, ID
+  FROM Grades
+  WHERE final * 2 > (midterm1 + midterm2)
+  ORDER BY LEFT(Name, 3), ID;
+END
+
+/*Mischievous Nephews*/
+CREATE PROCEDURE mischievousNephews()
+BEGIN
+  SELECT weekday(mischief_date) as weekday, mischief_date, author, title
+  FROM mischief
+  ORDER BY weekday ASC,
+  FIELD(author, "Huey", "Dewey", "Louie"),
+  mischief_date ASC,
+  title ASC;
+END
+
+/*Suspects Investigation*/
+CREATE PROCEDURE suspectsInvestigation()
+BEGIN
+SELECT id, name, surname
+  FROM Suspect
+  WHERE height <= 170
+    AND LEFT(name, 1) = "b"
+    AND surname LIKE "gre_n"
+  ORDER By id;
+END
+
+/*Suspects Investigation 2*/
+CREATE PROCEDURE suspectsInvestigation2()
+BEGIN
+  SELECT id, name, surname
+  FROM
+    Suspect
+  WHERE height <= 170
+    OR name NOT LIKE "b%"
+    OR surname NOT LIKE "gre_n"
+  ORDER BY id;
+END
+
+/*Security Breach*/
+CREATE PROCEDURE securityBreach()
+BEGIN
+	SELECT *
+  FROM users
+  WHERE attribute LIKE BINARY CONCAT("_%\%", first_name, "\_", second_name, "\%%");
+END
+
+/*Test Check*/
+CREATE PROCEDURE testCheck()
+  SELECT id, IF (given_answer IS NULL, "no answer", IF (correct_answer = given_answer, "correct", "incorrect")) AS checks
+  FROM answers
+  ORDER BY id;
+
+/*Expressions Verification*/
+CREATE PROCEDURE expressionsVerification()
+BEGIN
+	SELECT *
+  FROM expressions
+  WHERE ELT(LOCATE(operation, "+-*/"), a+b, a-b, a*b, a/b) = c;
+END
+
+/*New subscribers*/
+CREATE PROCEDURE newsSubscribers()
+BEGIN
+  SELECT DISTINCT subscriber
+  FROM (
+    SELECT *
+    FROM full_year
+    UNION
+    SELECT *
+    FROM half_year
+  ) as union
+  WHERE
+    newspaper LIKE "%Daily%"
+  ORDER BY
+    subscriber;
+END
+
+/*Countries Info/
+CREATE PROCEDURE countriesInfo()
+BEGIN
+	SELECT
+    COUNT(*) as number,
+    AVG(population) as average,
+    SUM(population) as total
+  FROM
+  countries;
+END
+
+/*Please add ; after each select statement*/
+CREATE PROCEDURE itemCounts()
+BEGIN
+  SELECT
+    item_name,
+    item_type,
+    COUNT(item_name) as item_count
+  FROM
+    availableItems
+  GROUP BY item_name, item_type
+  ORDER BY item_type, item_name;
+END
+
+/*Users by Continent*/
+CREATE PROCEDURE usersByContinent()
+BEGIN
+  SELECT
+    continent,
+    SUM(users) as users
+  FROM
+    countries
+  GROUP BY continent
+  ORDER BY users DESC;
+END
+
+/*Movie Directors*/
+CREATE PROCEDURE movieDirectors()
+BEGIN
+    SELECT
+        DISTINCT director
+    FROM
+        moviesInfo
+    WHERE
+        year > 2000
+    GROUP BY director
+    HAVING SUM(oscars) > 2;
+END
+
+/*Travel Diary*/
+CREATE PROCEDURE travelDiary()
+BEGIN
+  SELECT
+    GROUP_CONCAT(DISTINCT country
+      ORDER BY country ASC
+      SEPARATOR ";") AS countries
+  FROM
+    diary;
+END
+
+/*Soccer Players*/
+CREATE PROCEDURE soccerPlayers()
+BEGIN
+	SELECT
+    GROUP_CONCAT(first_name, " ", surname, " #", player_number
+      ORDER BY player_number
+      SEPARATOR "; "
+      ) as players
+  FROM
+    soccer_team;
+END
+
+/*Market Report*/
+CREATE PROCEDURE marketReport()
+BEGIN
+  SELECT
+    IFNULL(country, "Total:") as country,
+    COUNT(competitor) as competitors
+  FROM
+    foreignCompetitors
+  GROUP BY
+    country
+  WITH rollup;
+END
+
+CREATE PROCEDURE websiteHacking()
+    SELECT id,login,name
+    FROM users
+    WHERE type='user'
+    OR true
+    ORDER BY id;
+
+/*Find all nulls*/
+CREATE PROCEDURE nullIntern()
+BEGIN
+  SELECT COUNT(*) as number_of_nulls
+  FROM departments
+  WHERE description IS NULL
+  OR description REGEXP '^ *(NULL|nil|-) *$';
+END
+
+DROP PROCEDURE IF EXISTS legsCount;
+CREATE PROCEDURE legsCount()
+  SELECT SUM(IF(type = "human", 2, 4)) as summary_legs
+  FROM creatures
+  ORDER BY id;
+
+/*mult as multyply(column_name)*/
+CREATE PROCEDURE combinationLock()
+BEGIN
+  SELECT FLOOR(ROUND(EXP(SUM(LOG(LENGTH(characters)))),1)) as combinations
+  FROM discs;
+END
+
+/*select database with set for club's interests*/
+CREATE PROCEDURE interestClub()
+  SELECT name
+  FROM people_interests
+  WHERE interests & 1 AND interests & 8
+  ORDER BY name
+
+/*People with same hobbies*/
+CREATE PROCEDURE personalHobbies()
+BEGIN
+SELECT name
+  FROM people_hobbies
+  WHERE
+    hobbies & 1
+    AND hobbies & 2;
+END
+
+/*Get authors from book catalogs*/
+CREATE PROCEDURE booksCatalogs()
+BEGIN
+	SELECT
+    ExtractValue(xml_doc, '/descendant-or-self::author[1]') as author
+  FROM
+    catalogs
+  ORDER BY author;
+END
