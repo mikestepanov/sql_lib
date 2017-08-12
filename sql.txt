@@ -328,3 +328,17 @@ BEGIN
   GROUP BY
     country;
 END
+
+/*Get winner from soccer game series*/
+CREATE PROCEDURE soccerGameSeries()
+BEGIN
+  SELECT
+    IF(SUM(first_team_score) = SUM(second_team_score),
+      IF(SUM(first_team_score - second_team_score) = 0,
+        IF(SUM((match_host = 1) * first_team_score) = SUM((match_host = 2) * second_team_score),
+          0,
+          IF(SUM((match_host = 1) * first_team_score) > SUM((match_host = 2) * second_team_score), 1, 2)),
+        IF(SUM(first_team_score - second_team_score) > 0, 1, 2)),
+      IF(SUM(first_team_score) > SUM(second_team_score), 1, 2)) as winner
+  FROM scores;
+END
